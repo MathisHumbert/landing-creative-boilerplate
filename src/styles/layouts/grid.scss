@@ -1,0 +1,19 @@
+@use '../shared/index' as *;
+@use '../utils/index' as *;
+
+.grid__wrapper {
+  @extend %cover;
+
+  z-index: z('grid');
+  pointer-events: none;
+  display: flex;
+  justify-content: space-between;
+  gap: $grid-gutter;
+  padding: 0 $grid-margin;
+}
+
+.grid {
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 0, 0, 0.1);
+}

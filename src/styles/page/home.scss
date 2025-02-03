@@ -1,0 +1,47 @@
+@use '../shared/index' as *;
+@use '../utils/index' as *;
+
+.home {
+  @extend %page;
+}
+
+.home__top {
+  height: 75vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.8rem;
+
+  @include mobile {
+    height: 100vh;
+  }
+
+  h1 {
+    font-size: 10rem;
+
+    @include mobile {
+      font-size: 4rem;
+    }
+  }
+}
+
+.home__bottom {
+  height: 75vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 20rem;
+
+  .home__media {
+    width: 70rem;
+    height: 70rem;
+
+    @include mobile {
+      width: 20rem;
+      height: 20rem;
+    }
+  }
+}
