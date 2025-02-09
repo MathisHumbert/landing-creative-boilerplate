@@ -15,6 +15,7 @@ export default async function (eleventyConfig) {
       publicDir: 'public',
       root: 'src',
       plugins: [glsl()],
+      appType: 'spa',
     },
   });
 
