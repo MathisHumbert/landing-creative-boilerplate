@@ -1,57 +1,58 @@
-import * as THREE from 'three';
+import { PerspectiveCamera, PlaneGeometry, Scene, WebGLRenderer } from 'three';
+import AutoBind from 'auto-bind';
 
 import Media from './Media';
 
+import { responsive } from '../classes/Responsive';
+import { events } from '../utils/events';
+
 export default class Canvas {
-  constructor({ size }) {
-    this.template = null;
-    this.screen = size;
+  constructor() {
+    AutoBind(this);
 
     this.createScene();
     this.createCamera();
     this.createRender();
 
-    this.onResize(size);
+    this.addEventListeners();
   }
 
   /**
    * THREE.
    */
   createScene() {
-    this.scene = new THREE.Scene();
+    this.scene = new Scene();
   }
 
   createCamera() {
-    this.camera = new THREE.PerspectiveCamera(
+    this.camera = new PerspectiveCamera(
       45,
-      this.screen.width / this.screen.height,
+      responsive.screen.width / responsive.screen.height,
       0.1,
       100
     );
     this.camera.position.z = 5;
+
+    responsive.setCamera(this.camera);
   }
 
   createRender() {
-    this.renderer = new THREE.WebGLRenderer({
+    this.renderer = new WebGLRenderer({
       alpha: true,
       antialias: true,
     });
 
-    this.renderer.setSize(this.screen.width, this.screen.height);
+    this.renderer.setSize(responsive.screen.width, responsive.screen.height);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
     document.body.appendChild(this.renderer.domElement);
   }
 
   createMedia() {
-    this.geometry = new THREE.PlaneGeometry(1, 1, 16, 16);
-
     this.media = new Media({
       element: document.querySelector('.home__media'),
       scene: this.scene,
-      geometry: this.geometry,
-      screen: this.screen,
-      viewport: this.viewport,
+      geometry: new PlaneGeometry(1, 1, 16, 16),
     });
   }
 
@@ -75,24 +76,12 @@ export default class Canvas {
   /**
    * Events.
    */
-  onResize(size) {
-    this.screen = size;
-
-    this.renderer.setSize(this.screen.width, this.screen.height);
+  onResize() {
+    this.renderer.setSize(responsive.screen.width, responsive.screen.height);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    this.camera.aspect = this.screen.width / this.screen.height;
+    this.camera.aspect = responsive.screen.width / responsive.screen.height;
     this.camera.updateProjectionMatrix();
-
-    const fov = this.camera.fov * (Math.PI / 180);
-    const height = 2 * Math.tan(fov / 2) * this.camera.position.z;
-    const width = height * this.camera.aspect;
-
-    this.viewport = { width, height };
-
-    if (this.media && this.media.onResize) {
-      this.media.onResize({ screen: this.screen, viewport: this.viewport });
-    }
   }
 
   onTouchDown(event) {}
@@ -101,16 +90,24 @@ export default class Canvas {
 
   onTouchUp() {}
 
-  onWheel(normalized) {}
+  onLenis(event) {}
+
+  /**
+   * Listeners.
+   */
+  addEventListeners() {
+    events.on('resize', this.onResize);
+    events.on('touchdown', this.onTouchDown);
+    events.on('touchmove', this.onTouchMove);
+    events.on('touchup', this.onTouchUp);
+    events.on('lenis', this.onLenis);
+    events.on('end-update', this.update);
+  }
 
   /**
    * Loop.
    */
-  update(scroll, time) {
-    if (this.media && this.media.update) {
-      this.media.update(scroll);
-    }
-
+  update() {
     this.renderer.render(this.scene, this.camera);
   }
 }

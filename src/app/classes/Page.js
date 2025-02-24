@@ -1,4 +1,4 @@
-import autoBind from 'auto-bind';
+import AutoBind from 'auto-bind';
 import EventEmitter from 'events';
 import gsap from 'gsap';
 
@@ -10,12 +10,13 @@ import { map, each } from '../utils/dom';
 import Appear from '../animations/Appear';
 import Text from '../animations/Text';
 import Title from '../animations/Title';
+import { events } from '../utils/events';
 
 export default class Page extends EventEmitter {
-  constructor({ classes, id, element, elements, responsive }) {
+  constructor({ classes, id, element, elements }) {
     super();
 
-    autoBind(this);
+    AutoBind(this);
 
     this.classes = { ...classes };
     this.id = id;
@@ -32,10 +33,6 @@ export default class Page extends EventEmitter {
         ...elements,
       },
     };
-
-    this.fontSize = responsive.fontSize;
-    this.size = responsive.size;
-    this.scroll = 0;
 
     this.isVisible = false;
 
@@ -129,8 +126,6 @@ export default class Page extends EventEmitter {
    * Animations.
    */
   show() {
-    this.scroll = 0;
-
     each(this.animations, (animation) => animation.createAnimation());
 
     return new Promise((res) => {
@@ -146,10 +141,7 @@ export default class Page extends EventEmitter {
   /**
    * Events.
    */
-  onResize(size, fontSize) {
-    this.fontSize = fontSize;
-    this.size = size;
-
+  onResize(event) {
     window.requestAnimationFrame(() => {
       each(this.animations, (animation) => {
         if (animation.onResize) {
@@ -165,24 +157,29 @@ export default class Page extends EventEmitter {
 
   onTouchUp() {}
 
-  onWheel(event) {
-    this.scroll = event.scroll;
-  }
+  onLenis(event) {}
 
   /**
    * Listeners.
    */
-  addEventListeners() {}
+  addEventListeners() {
+    events.on('resize', this.onResize);
+    events.on('touchdown', this.onTouchDown);
+    events.on('touchmove', this.onTouchMove);
+    events.on('touchup', this.onTouchUp);
+    events.on('lenis', this.onLenis);
+    events.on('update', this.update);
+  }
 
   /**
    * Loop.
    */
-  update(scroll, time) {
+  update() {
     if (!this.isVisible) return;
 
     each(this.animations, (animation) => {
       if (animation.update) {
-        animation.update(scroll);
+        animation.update();
       }
     });
   }

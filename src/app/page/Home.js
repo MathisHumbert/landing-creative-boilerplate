@@ -1,12 +1,11 @@
 import Page from '../classes/Page';
 
 export default class Home extends Page {
-  constructor({ responsive }) {
+  constructor() {
     super({
       id: 'home',
       element: '.home',
       elements: {},
-      responsive,
     });
   }
 
@@ -27,22 +26,21 @@ export default class Home extends Page {
   /**
    * Events
    */
-  onResize(size, fontSize) {
-    super.onResize(size, fontSize);
-
-    this.fontSize = fontSize;
-    this.size = size;
+  onResize(event) {
+    super.onResize(event);
   }
 
   /**
    * Listeners.
    */
-  addEventListeners() {}
+  addEventListeners() {
+    super.addEventListeners();
+  }
 
   /**
    * Loop.
    */
-  update(scroll, time) {
-    super.update(scroll, time);
+  update(event) {
+    super.update(event);
   }
 }
