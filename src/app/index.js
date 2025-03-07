@@ -55,7 +55,7 @@ class App {
 
     this.preloader.load(this.page.element);
 
-    this.preloader.once('loaded', this.onPreloaded);
+    events.on('loaded', this.onPreloaded);
   }
 
   createStats() {
